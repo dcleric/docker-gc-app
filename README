@@ -1,8 +1,12 @@
-ENV_SSH_PRIVATE_KEY - base64 encoded key
+
+This is a Garbage Collector deis application for Docker Registry
+
+Variables you need to set:
+
+ENV_SSH_PRIVATE_KEY
 ENV_SSH_USER 
 
 ENV_HOUR_OF_DAY - hour of the day to start
 ENV_MINUTE_OF_HOUR - minute of the hour 
 
 ENV_REGISTRY_HOST_LIST - comma-separated list of the ip, first one will be selected as GC
-
