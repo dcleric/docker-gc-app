@@ -13,8 +13,8 @@ f = open('ssh_key.pem', 'w')
 f.write(os.environ.get('ENV_SSH_PRIVATE_KEY'))
 f.close
 
-env.key_filename = 'ssh_key.pem'
-#env.key = os.environ.get('ENV_SSH_PRIVATE_KEY')
+#env.key_filename = 'ssh_key.pem'
+env.key = os.environ.get('ENV_SSH_PRIVATE_KEY')
 env.user = os.environ.get('ENV_SSH_USER')
 
 hour_of_day = os.environ.get('ENV_HOUR_OF_DAY')
@@ -50,7 +50,7 @@ logging.basicConfig()
 @sched.scheduled_job('cron', minute=minute, hour=hour_of_day)
 def docker_registry_gc():
     for host in other_hosts:
-        with settings(host_string = host, key_filename = key_filename, user = user):
+        with settings(host_string = host, key = key, user = user):
            run('sudo systemctl stop docker-registry')
            run('docker run -d -v /etc/docker/registry/config.yml:/etc/docker/registry/config.yml:ro -e ENV_REGISTRY_STORAGE_MAINTENANCE_READONLY_ENABLED=true --name docker-registry-ro registry:latest')
         pass
