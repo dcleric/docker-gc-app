@@ -50,7 +50,7 @@ logging.basicConfig()
 @sched.scheduled_job('cron', minute=minute, hour=hour_of_day)
 def docker_registry_gc():
     for host in other_hosts:
-        with settings(host_string = host, key = key, user = user):
+        with settings(host_string = host, key_filename = key_filename, user = user):
            run('sudo systemctl stop docker-registry')
            run('docker run -d -v /etc/docker/registry/config.yml:/etc/docker/registry/config.yml:ro -e ENV_REGISTRY_STORAGE_MAINTENANCE_READONLY_ENABLED=true --name docker-registry-ro registry:latest')
         pass
