@@ -9,13 +9,13 @@ from fabric.api import settings
 from pythonjsonlogger import jsonlogger
 
 #env.keyfile = ssh_key.pem  os.environ.get('ENV_SSH_PRIVATE_KEY')
-f = open('ssh_key.pem', 'w')
-f.write(os.environ.get('ENV_SSH_PRIVATE_KEY'))
-f.close
+#f = open('ssh_key.pem', 'w')
+#f.write(os.environ.get('ENV_SSH_PRIVATE_KEY'))
+#f.close
 
 #env.key_filename = 'ssh_key.pem'
-env.key = os.environ.get('ENV_SSH_PRIVATE_KEY')
-env.user = os.environ.get('ENV_SSH_USER')
+key = os.environ.get('ENV_SSH_PRIVATE_KEY')
+user = os.environ.get('ENV_SSH_USER')
 
 hour_of_day = os.environ.get('ENV_HOUR_OF_DAY')
 minute = os.environ.get('ENV_MINUTE_OF_HOUR')
