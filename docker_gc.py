@@ -1,5 +1,6 @@
 import os
 import sys
+import base64
 import logging
 from apscheduler.schedulers.blocking import BlockingScheduler
 from fabric.api import env
@@ -14,7 +15,7 @@ from pythonjsonlogger import jsonlogger
 #f.close
 
 #env.key_filename = 'ssh_key.pem'
-key = os.environ.get('ENV_SSH_PRIVATE_KEY')
+key = base64.b64decode(os.environ.get('ENV_SSH_PRIVATE_KEY'))
 user = os.environ.get('ENV_SSH_USER')
 
 hour_of_day = os.environ.get('ENV_HOUR_OF_DAY')
