@@ -3,8 +3,6 @@ import sys
 import base64
 import logging
 from apscheduler.schedulers.blocking import BlockingScheduler
-from fabric.api import env
-from fabric.api import hosts
 from fabric.api import run
 from fabric.api import settings
 from pythonjsonlogger import jsonlogger
@@ -49,7 +47,7 @@ def docker_registry_gc():
         with settings(host_string=host, key=key, user=user):
             run('sudo systemctl stop docker-registry')
             run('docker run -d -v \
-            /etc/docker/registry/config.yml:/etc/docker/registry/config.yml:ro \
+            /etc/docker/registry/config.yml:/etc/docker/registry/config.yml:ro\
              -e ENV_REGISTRY_STORAGE_MAINTENANCE_READONLY_ENABLED=true --name \
               docker-registry-ro registry:latest')
         pass
