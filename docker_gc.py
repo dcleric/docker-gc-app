@@ -48,15 +48,20 @@ def docker_registry_gc():
     for host in other_hosts:
         with settings(host_string=host, key=key, user=user):
             run('sudo systemctl stop docker-registry')
-            run('docker run -d -v /etc/docker/registry/config.yml:/etc/docker/registry/config.yml:ro -e ENV_REGISTRY_STORAGE_MAINTENANCE_READONLY_ENABLED=true --name docker-registry-ro registry:latest')
+            run('docker run -d -v \
+            /etc/docker/registry/config.yml:/etc/docker/registry/config.yml:ro \
+             -e ENV_REGISTRY_STORAGE_MAINTENANCE_READONLY_ENABLED=true --name \
+              docker-registry-ro registry:latest')
         pass
     for host in registry_gc:
         with settings(host_string=host, key=key, user=user):
-            run('docker exec -it docker-registry bin/registry garbage-collect --dry-run /etc/docker/registry/config.yml')
+            run('docker exec -it docker-registry bin/registry garbage-collect \
+            --dry-run /etc/docker/registry/config.yml')
         pass
     for host in other_hosts:
         with settings(host_string=host, key=key, user=user):
-            run('docker stop docker-registry-ro && docker rm docker-registry-ro')
+            run('docker stop docker-registry-ro && \
+            docker rm docker-registry-ro')
             run('sudo systemctl start docker-registry')
 
 sched.start()
