@@ -9,12 +9,6 @@ from fabric.api import run
 from fabric.api import settings
 from pythonjsonlogger import jsonlogger
 
-#env.keyfile = ssh_key.pem  os.environ.get('ENV_SSH_PRIVATE_KEY')
-#f = open('ssh_key.pem', 'w')
-#f.write(os.environ.get('ENV_SSH_PRIVATE_KEY'))
-#f.close
-
-#env.key_filename = 'ssh_key.pem'
 key = base64.b64decode(os.environ.get('ENV_SSH_PRIVATE_KEY'))
 user = os.environ.get('ENV_SSH_USER')
 
@@ -48,20 +42,21 @@ log = logging.getLogger(__name__)
 sched = BlockingScheduler()
 logging.basicConfig()
 
+
 @sched.scheduled_job('cron', minute=minute, hour=hour_of_day)
 def docker_registry_gc():
     for host in other_hosts:
-        with settings(host_string = host, key = key, user = user):
-           run('sudo systemctl stop docker-registry')
-           run('docker run -d -v /etc/docker/registry/config.yml:/etc/docker/registry/config.yml:ro -e ENV_REGISTRY_STORAGE_MAINTENANCE_READONLY_ENABLED=true --name docker-registry-ro registry:latest')
+        with settings(host_string=host, key=key, user=user):
+            run('sudo systemctl stop docker-registry')
+            run('docker run -d -v /etc/docker/registry/config.yml:/etc/docker/registry/config.yml:ro -e ENV_REGISTRY_STORAGE_MAINTENANCE_READONLY_ENABLED=true --name docker-registry-ro registry:latest')
         pass
     for host in registry_gc:
-        with settings(host_string = host, key = key, user = user):
-           run('docker exec -it docker-registry bin/registry garbage-collect --dry-run /etc/docker/registry/config.yml')
+        with settings(host_string=host, key=key, user=user):
+            run('docker exec -it docker-registry bin/registry garbage-collect --dry-run /etc/docker/registry/config.yml')
         pass
     for host in other_hosts:
-       with settings(host_string = host, key = key, user = user):
-          run('docker stop docker-registry-ro && docker rm docker-registry-ro')
-          run('sudo systemctl start docker-registry')
+        with settings(host_string=host, key=key, user=user):
+            run('docker stop docker-registry-ro && docker rm docker-registry-ro')
+            run('sudo systemctl start docker-registry')
 
 sched.start()
