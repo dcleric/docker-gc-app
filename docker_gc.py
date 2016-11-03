@@ -57,7 +57,7 @@ def docker_registry_gc():
         pass
     for host in registry_gc:
         with settings(host_string = host, key = key, user = user):
-           run('docker exec -it docker-registy bin/registry garbage-collect --dry-run /etc/docker/registry/config.yml')
+           run('docker exec -it docker-registry bin/registry garbage-collect --dry-run /etc/docker/registry/config.yml')
         pass
     for host in other_hosts:
        with settings(host_string = host, key = key, user = user):
