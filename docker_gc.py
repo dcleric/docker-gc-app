@@ -65,8 +65,7 @@ def main():
             run('docker stop docker-registry-ro && \
             docker rm docker-registry-ro')
             run('sudo systemctl start docker-registry')
-
-sched.start()
+    sched.start()
 
 if __name__ == '__main__':
     main()
