@@ -38,16 +38,6 @@ if os.environ.get('FORMATTER', 'json') == 'json':
 log = logging.getLogger(__name__)
 
 
-def main():
-    sched = BlockingScheduler()
-    logging.basicConfig()
-    log.info("""Starting job with with parameters: \
-    time: %d:%d, ssh_user: %s, ssh_key: %s, registry_hosts: %s, \
-    garbage_collector: \
-     %s""" % (hour_of_day, minute, user, key, hosts_string, registry_gc))
-
-
-@sched.scheduled_job('cron', minute=minute, hour=hour_of_day)
 def docker_registry_gc():
     log.info("""Reloading registry instances with Read-only""")
     for host in other_hosts:
@@ -70,6 +60,19 @@ def docker_registry_gc():
             run('docker stop docker-registry-ro && \
             docker rm docker-registry-ro')
             run('sudo systemctl start docker-registry')
+
+
+def main():
+    sched = BlockingScheduler()
+    logging.basicConfig()
+    log.info("""Starting job with with parameters: \
+    time: %d:%d, ssh_user: %s, ssh_key: %s, registry_hosts: %s, \
+    garbage_collector: \
+     %s""" % (hour_of_day, minute, user, key, hosts_string, registry_gc))
+    sched.scheduled_job('cron',
+                        minute=minute,
+                        hour=hour_of_day,
+                        job=docker_registry_gc)
     sched.start()
 
 if __name__ == '__main__':
