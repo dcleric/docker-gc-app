@@ -41,6 +41,10 @@ log = logging.getLogger(__name__)
 def main():
     sched = BlockingScheduler()
     logging.basicConfig()
+    log.info("""Starting job with with parameters: \
+    time: %d:%d, ssh_user: %s, ssh_key: %s, registry_hosts: %s, \
+    garbage_collector: \
+     %s""" % (hour_of_day, minute, user, key, hosts_string, registry_gc))
 
     @sched.scheduled_job('cron', minute=minute, hour=hour_of_day)
     def docker_registry_gc():
