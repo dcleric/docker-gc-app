@@ -4,7 +4,7 @@ stages:
 test:
   stage: test
   script:
-    - to
+    - tox
   tags:
     - python2
 deploy_n3:
