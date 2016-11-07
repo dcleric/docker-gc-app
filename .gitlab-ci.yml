@@ -4,16 +4,26 @@ stages:
 test:
   stage: test
   script:
-    - tox
+    - to
   tags:
     - python2
 deploy_n3:
   stage: deploy
   before_script:
+    - mkdir -p ~/.ssh
+    - ENV_SSH_USER = $SSH_USER  
+    - ENV_HOUR_OF_DAY = $HOUR_OF_DAY
+    - ENV_MINUTE_OF_HOUR = $MINUTE_OF_HOUR
+    - ENV_REGISTRY_HOST_LIST = $REGISTRY_HOST_LIST
+    - echo "$DEPLOY_SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/io-docker-gc
+    - chmod 600 ~/.ssh/io-docker-gc
+    - cp ./git_ssh.sh ~/io-docker-gc_ssh.sh
+    - chmod +x ~/io-docker-gc_ssh.sh
     - exit 0
   after_script:
-    - exit 0
+    - rm -f  ~/.ssh/io-docker-gc
   script:
-    - exit 0
+    - git remote add prod-n3 ssh://git@deis.n3.nato:2222/io-docker-distribution.git || true
+    - GIT_SSH=~/io-docker-gc_ssh.sh git push prod-n3 origin/master
   only:
     - master

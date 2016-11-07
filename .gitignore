@@ -1,2 +1,4 @@
 .env
+prod.env
 *.bak
+*.pyc
