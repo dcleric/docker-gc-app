@@ -46,23 +46,24 @@ def main():
     garbage_collector: \
      %s""" % (hour_of_day, minute, user, key, hosts_string, registry_gc))
 
-    @sched.scheduled_job('cron', minute=minute, hour=hour_of_day)
-    def docker_registry_gc():
-        log.info("""Reloading registry instances with Read-only""")
-        for host in other_hosts:
-            with settings(host_string=host, key=key, user=user):
-                run('sudo systemctl stop docker-registry')
-                run('docker run -d -v \
+
+@sched.scheduled_job('cron', minute=minute, hour=hour_of_day)
+def docker_registry_gc():
+    log.info("""Reloading registry instances with Read-only""")
+    for host in other_hosts:
+        with settings(host_string=host, key=key, user=user):
+            run('sudo systemctl stop docker-registry')
+            run('docker run -d -v \
             /etc/docker/registry/config.yml:/etc/docker/registry/config.yml:ro\
              -e ENV_REGISTRY_STORAGE_MAINTENANCE_READONLY_ENABLED=true --name \
               docker-registry-ro registry:2.5.1')
-        log.info("""Reloading completed.""")
+    log.info("""Reloading completed.""")
     for host in registry_gc:
         log.info("""Executing a 2-step garbage collection process.""")
         with settings(host_string=host, key=key, user=user):
             run('docker exec -it docker-registry bin/registry garbage-collect \
             --dry-run /etc/docker/registry/config.yml')
-        log.info("""Execution of the garbage-collection completed.""")
+    log.info("""Execution of the garbage-collection completed.""")
     for host in other_hosts:
         log.info("""Starting registry instances in normal mode.""")
         with settings(host_string=host, key=key, user=user):
