@@ -18,8 +18,7 @@ deploy_n3:
   after_script:
     - rm -f  ~/.ssh/io-docker-gc
   script:
-    - cat ~/.ssh/io-docker-gc
-    - git remote add prod-n3 ssh://git@deis.n3.nato:2222/io-docker-distribution.git || true
+    - git remote add prod-n3 ssh://git@deis.n3.nato:2222/io-docker-gc-distribution.git || true
     - GIT_SSH=~/io-docker-gc_ssh.sh git push prod-n3 origin/master
   only:
     - master
