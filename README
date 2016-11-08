@@ -1,10 +1,12 @@
 
 This is a Garbage Collector deis application for Docker Registry
 
+It's based on python fabric
+
 Variables you need to set:
 
-ENV_SSH_PRIVATE_KEY
-ENV_SSH_USER 
+ENV_SSH_PRIVATE_KEY - private key to connect to instance hosts
+ENV_SSH_USER - user to connect to instance hosts
 
 ENV_HOUR_OF_DAY - hour of the day to start
 ENV_MINUTE_OF_HOUR - minute of the hour 
