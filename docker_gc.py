@@ -66,7 +66,7 @@ def main():
     sched = BlockingScheduler()
     logging.basicConfig()
     log.info("""Starting job with with parameters: \
-    time: %d:%d, ssh_user: %s, ssh_key: %s, registry_hosts: %s, \
+    time: %s:%s, ssh_user: %s, ssh_key: %s, registry_hosts: %s, \
     garbage_collector: \
      %s""" % (hour_of_day, minute, user, key, hosts_string, registry_gc))
     sched.scheduled_job('cron',
