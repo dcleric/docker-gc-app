@@ -3,18 +3,10 @@ import sys
 import base64
 import logging
 from apscheduler.schedulers.blocking import BlockingScheduler
-from fabric.api import env
-from fabric.api import hosts
 from fabric.api import run
 from fabric.api import settings
 from pythonjsonlogger import jsonlogger
 
-#env.keyfile = ssh_key.pem  os.environ.get('ENV_SSH_PRIVATE_KEY')
-#f = open('ssh_key.pem', 'w')
-#f.write(os.environ.get('ENV_SSH_PRIVATE_KEY'))
-#f.close
-
-#env.key_filename = 'ssh_key.pem'
 key = base64.b64decode(os.environ.get('ENV_SSH_PRIVATE_KEY'))
 user = os.environ.get('ENV_SSH_USER')
 
@@ -45,23 +37,43 @@ if os.environ.get('FORMATTER', 'json') == 'json':
     root_log.addHandler(handler)
 log = logging.getLogger(__name__)
 
-sched = BlockingScheduler()
-logging.basicConfig()
 
-@sched.scheduled_job('cron', minute=minute, hour=hour_of_day)
 def docker_registry_gc():
+    log.info("""Reloading registry instances with Read-only""")
     for host in other_hosts:
-        with settings(host_string = host, key = key, user = user):
-           run('sudo systemctl stop docker-registry')
-           run('docker run -d -v /etc/docker/registry/config.yml:/etc/docker/registry/config.yml:ro -e ENV_REGISTRY_STORAGE_MAINTENANCE_READONLY_ENABLED=true --name docker-registry-ro registry:latest')
-        pass
+        with settings(host_string=host, key=key, user=user):
+            run('sudo systemctl stop docker-registry')
+            run('docker run -d -v \
+            /etc/docker/registry/config.yml:/etc/docker/registry/config.yml:ro\
+             -e ENV_REGISTRY_STORAGE_MAINTENANCE_READONLY_ENABLED=true --name \
+              docker-registry-ro registry:2.5.1')
+    log.info("""Reloading completed.""")
     for host in registry_gc:
-        with settings(host_string = host, key = key, user = user):
-           run('docker exec -it docker-registry bin/registry garbage-collect --dry-run /etc/docker/registry/config.yml')
-        pass
+        log.info("""Executing a 2-step garbage collection process.""")
+        with settings(host_string=host, key=key, user=user):
+            run('docker exec -it docker-registry bin/registry garbage-collect \
+            --dry-run /etc/docker/registry/config.yml')
+    log.info("""Execution of the garbage-collection completed.""")
     for host in other_hosts:
-       with settings(host_string = host, key = key, user = user):
-          run('docker stop docker-registry-ro && docker rm docker-registry-ro')
-          run('sudo systemctl start docker-registry')
+        log.info("""Starting registry instances in normal mode.""")
+        with settings(host_string=host, key=key, user=user):
+            run('docker stop docker-registry-ro && \
+            docker rm docker-registry-ro')
+            run('sudo systemctl start docker-registry')
 
-sched.start()
+
+def main():
+    sched = BlockingScheduler()
+    logging.basicConfig()
+    log.info("""Starting job with with parameters: \
+    time: %d:%d, ssh_user: %s, ssh_key: %s, registry_hosts: %s, \
+    garbage_collector: \
+     %s""" % (hour_of_day, minute, user, key, hosts_string, registry_gc))
+    sched.scheduled_job('cron',
+                        minute=minute,
+                        hour=hour_of_day,
+                        job=docker_registry_gc)
+    sched.start()
+
+if __name__ == '__main__':
+    main()
