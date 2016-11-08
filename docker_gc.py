@@ -47,7 +47,7 @@ def docker_registry_gc():
             /etc/docker/registry/config.yml:/etc/docker/registry/config.yml:ro\
              -e ENV_REGISTRY_STORAGE_MAINTENANCE_READONLY_ENABLED=true --name \
               docker-registry-ro registry:2.5.1')
-    log.info("""Reloading completed.""")
+    log.info("""Reloading of registry instances completed.""")
     for host in registry_gc:
         log.info("""Executing a 2-step garbage collection process.""")
         with settings(host_string=host, key=key, user=user):
@@ -66,7 +66,7 @@ def main():
     sched = BlockingScheduler()
     logging.basicConfig()
     log.info("""Starting job with with parameters: \
-    time: %s:%s, ssh_user: %s, ssh_key: %s, registry_hosts: %s, \
+    time: %s:%s, ssh_user: %s, registry_hosts: %s, \
     garbage_collector: \
      %s""" % (hour_of_day, minute, user, key, hosts_string, registry_gc))
     sched.scheduled_job('cron',
