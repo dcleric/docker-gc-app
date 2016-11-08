@@ -11,10 +11,6 @@ deploy_n3:
   stage: deploy
   before_script:
     - mkdir -p ~/.ssh
-    - ENV_SSH_USER = $SSH_USER  
-    - ENV_HOUR_OF_DAY = $HOUR_OF_DAY
-    - ENV_MINUTE_OF_HOUR = $MINUTE_OF_HOUR
-    - ENV_REGISTRY_HOST_LIST = $REGISTRY_HOST_LIST
     - echo "$DEPLOY_SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/io-docker-gc
     - chmod 600 ~/.ssh/io-docker-gc
     - cp ./git_ssh.sh ~/io-docker-gc_ssh.sh
