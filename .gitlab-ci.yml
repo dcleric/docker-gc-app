@@ -15,7 +15,6 @@ deploy_n3:
     - chmod 600 ~/.ssh/io-docker-gc
     - cp ./git_ssh.sh ~/io-docker-gc_ssh.sh
     - chmod +x ~/io-docker-gc_ssh.sh
-    - exit 0
   after_script:
     - rm -f  ~/.ssh/io-docker-gc
   script:
