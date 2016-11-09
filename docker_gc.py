@@ -69,10 +69,7 @@ def main():
     time: %s:%s, ssh_user: %s, registry_hosts: %s, \
     garbage_collector: \
      %s""" % (hour_of_day, minute, user, hosts_string, registry_gc))
-    sched.scheduled_job('cron',
-                        minute=minute,
-                        hour=hour_of_day,
-                        job=docker_registry_gc)
+    sched.add_job(docker_registry_gc, 'cron', minute=minute, hour=hour_of_day)
     sched.start()
 
 if __name__ == '__main__':
