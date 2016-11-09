@@ -1,4 +1,5 @@
 import os
+import gc
 import sys
 import base64
 import logging
@@ -60,6 +61,8 @@ def docker_registry_gc():
             run('docker stop docker-registry-ro && \
             docker rm docker-registry-ro')
             run('sudo systemctl start docker-registry')
+    log.info("""Starting a python garbage-collection""")
+    gc.collect()
 
 
 def main():
